@@ -1,11 +1,13 @@
 ---
-title: "HW1"
+title: "README"
 author: "Alex Hertadi"
 date: "9/16/2021"
 output: github_document
 ---
   
 ```{r}
-hist(rnorm(10))
+library(readr)
+x = read_csv("https://www.fhwa.dot.gov/bridge/nbi/2020/delimited/WI20.txt")
+x
 ```
 
