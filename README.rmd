@@ -18,7 +18,8 @@ Make a data frame subset and plot interesting values.
 
 ```{r}
 y = data.frame(x$STRUCTURE_NUMBER_008,x$YEAR_BUILT_027,x$BRIDGE_CONDITION, x$TRAFFIC_LANES_ON_028A)
-y
+head(y)
+tail(y)
 plot(x$YEAR_BUILT_027, x$TRAFFIC_LANES_ON_028A, xlab = "Year Built", ylab = "Traffic Lanes on Bridge")
 ```
 
