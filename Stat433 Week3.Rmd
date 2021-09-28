@@ -54,4 +54,7 @@ flights %>%
   
 ```
 
-It seems that there exists a relationship between the average delay and number of flight cancellations especially at a certain threshold. Outliers with cancellation numbers above 300 are removed for a clearer view of the graph.  
+It seems that there exists a relationship between the average delay and number of flight cancellations especially at a certain threshold. Outliers with cancellation numbers above 300 are removed for a clearer view of the graph. 
+
+
+Link to Github file : https://github.com/afh1760/Stat433/blob/master/Stat433%20Week3.Rmd
