@@ -1,0 +1,57 @@
+---
+title: "Stat 433 Week 3"
+author: "Alex Hertadi"
+date: "9/27/2021"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+
+# install.packages("nycflights13")
+library(nycflights13)
+library(ggplot2)
+library(lubridate)
+```
+
+1.
+```{r}
+flights %>% 
+  count(is.na(dep_time))
+```
+8255 flights have a missing dep_time
+```{r}
+mis = flights %>% filter(is.na(dep_time))
+mis
+notail = flights %>% filter(is.na(tailnum))
+notail
+```
+The entries with a missing dep_time are also missing dep_delay, arr_time, arr_delay, and air_time. These entries might represent flights that got cancelled.
+2512 of the entries also do not have tailnumbers, indicating that there might've not been an aircraft assigned to these schedules
+
+2.
+```{r}
+#isolated table without NA entries
+noCancel = flights %>% filter(!is.na(dep_time), !is.na(sched_dep_time))
+noCancel %>% select(dep_time,sched_dep_time,dep_delay)
+noCancelTransform = noCancel %>% 
+        mutate(sched_dep_time = 60*hour + minute) %>% 
+        mutate(dep_time = sched_dep_time + dep_delay)
+noCancelTransform
+
+```
+3.
+```{r}
+flights %>% 
+  group_by(day = yday(time_hour)) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+    canceled = sum(is.na(dep_time))
+  ) %>%
+  filter(canceled<300) %>% 
+  ggplot(mapping = aes(y = canceled, x = delay)) +
+  geom_point()
+  
+```
+
+It seems that there exists a relationship between the average delay and number of flight cancellations especially at a certain threshold. Outliers with cancellation numbers above 300 are removed for a clearer view of the graph.  
