@@ -1,0 +1,138 @@
+---
+title: "Stat 433 Week 3"
+author: "Alex Hertadi"
+date: "10/5/2021"
+output: html_document
+---
+
+In this assignment I am looking to see if there exists a preferred time to schedule a flight if I need to avoid delays and whether there exists external variables that influence said preferred time/s. Upon my analysis I have found that flights in the morning are generally less delayed as opposed to flights in the afternoon/night, and that I found 3 patterns of data that influence delays throughout the day:
+
+
+1. Choosing certain airlines influences the expected delays throughout the day. Bigger airlines with many flights generally are stable and follow the general trend.
+2. Choosing flights departing from JFK airport may be helpful if you have to take an evening flight.
+3. Delays fluctuate throughout the year but are most delayed in the "holiday" months: June, July, December
+
+While I considered to do a joint dataset analysis with the weather data, I found that there are so much interesting data to be found just from this dataset.
+
+
+```{r}
+library(dplyr)
+
+# install.packages("nycflights13")
+library(nycflights13)
+library(ggplot2)
+library(lubridate)
+library(tidyr)
+library(gapminder)
+```
+
+
+First, I tried to plot my flight data to see delays throughout the day by averaging the data points that have the same scheduled departure time. While the time variables is not continuous I chose to leave it that way instead of the continuous transformation because while it may not be useful for linear modeling, it provides a nice visualization by having each hour separated like so. I then further simplified the data by making the x variable "hour" instead of "scheduled departure time" to get a even more "clear" view of the data. From both plots below we can see that there exists a relationship between the scheduled departure time and amount of delay.
+
+```{r}
+#isolated table without NA entries
+noCancel = flights %>% filter(!is.na(dep_time), !is.na(sched_dep_time))
+noCancel %>% 
+  group_by(hour) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+  ) 
+noCancel %>% 
+  group_by(sched_dep_time) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+  ) %>%
+  ggplot(mapping = aes(y = delay, x = sched_dep_time)) +
+  geom_point()
+noCancel %>% 
+  group_by(hour) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+  ) %>%
+  ggplot(mapping = aes(y = delay, x = hour)) +
+  geom_point()
+
+```
+
+Now that the relationship has been established I want to find some external variables that might influence these delays throughout the day. I then plotted for each airline, and it looks like there some slight differences between them. For the most part, the big airlines have a steady trend that resembles that of the overall data without much deviation. One notable airline is "DL", which is a great option if you have to take a late night flight since the delays at 10pm and 11pm drop off significantly. Some of the smaller airline companies are more erratic, with "OO" being an extreme case in terms of delay trends
+
+```{r}
+noCancel %>% 
+  group_by(hour, carrier) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+  ) %>%
+  ggplot(mapping = aes(y = delay, x = hour, color = carrier)) +
+  geom_point()
+noCancel %>% 
+  group_by(hour, carrier) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+  ) %>% 
+  filter(delay<150) %>%
+  ggplot(mapping = aes(y = delay, x = hour)) +
+  facet_wrap(~ carrier)+
+  geom_point()
+q2 = noCancel %>% 
+  group_by(hour,carrier) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+  ) 
+q2 %>% distinct() %>%  pivot_wider(names_from = carrier,values_from = delay)
+```
+
+I next checked to see if the airports made a difference when it came to delays throughout the day, and the results were favorable. It is shown that while all three airports had similar delay times at the beginning of the day, as the day went on they distinctly diverged, with EWR showing the most average delays, LGA coming in second and JFK having the least delays.
+
+```{r}
+noCancel %>% 
+  group_by(hour, origin) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+  ) %>%
+  ggplot(mapping = aes(y = delay, x = hour, color = origin)) +
+  geom_point()
+noCancel %>% 
+  group_by(hour, origin) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+  ) %>%
+  ggplot(mapping = aes(y = delay, x = hour)) +
+  facet_wrap(~ origin)+
+  geom_point()
+q2 = noCancel %>% 
+  group_by(hour, origin) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+  ) 
+q2 %>% distinct() %>%  pivot_wider(names_from = origin,values_from = delay)
+```
+
+Lastly I plotted to see if there is a correlation between months and delay, and I found that during the holiday months the delay sky rockets, namely in June, July, and December. The fluctuations seem stable in January through April, while August through November are very low in terms of delays. There seems to be a build up to the "crazy" months evident in May and November, likely from early bird vacationers.
+
+
+```{r}
+noCancel %>% 
+  group_by(hour, month) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+  ) %>%
+  ggplot(mapping = aes(y = delay, x = hour, color = month)) +
+  geom_point()
+noCancel %>% 
+  group_by(hour, month) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+      ) %>%
+  ggplot(mapping = aes(y = delay, x = hour)) +
+  facet_wrap(~ month)+
+  geom_point()
+noCancel %>% 
+  group_by(hour, month) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+      ) 
+```
+
+
+
+Link to Github Repo : https://github.com/afh1760/Stat433/
