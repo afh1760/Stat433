@@ -1,5 +1,5 @@
 ---
-title: "Stat 433 Week 3"
+title: "Stat 433 Week 4"
 author: "Alex Hertadi"
 date: "10/5/2021"
 output: html_document
@@ -26,6 +26,7 @@ library(tidyr)
 library(gapminder)
 ```
 
+# Basic Plot with Time and Delay
 
 First, I tried to plot my flight data to see delays throughout the day by averaging the data points that have the same scheduled departure time. While the time variables is not continuous I chose to leave it that way instead of the continuous transformation because while it may not be useful for linear modeling, it provides a nice visualization by having each hour separated like so. I then further simplified the data by making the x variable "hour" instead of "scheduled departure time" to get a even more "clear" view of the data. From both plots below we can see that there exists a relationship between the scheduled departure time and amount of delay.
 
@@ -54,6 +55,8 @@ noCancel %>%
 
 ```
 
+# Effect of Airline
+
 Now that the relationship has been established I want to find some external variables that might influence these delays throughout the day. I then plotted for each airline, and it looks like there some slight differences between them. For the most part, the big airlines have a steady trend that resembles that of the overall data without much deviation. One notable airline is "DL", which is a great option if you have to take a late night flight since the delays at 10pm and 11pm drop off significantly. Some of the smaller airline companies are more erratic, with "OO" being an extreme case in terms of delay trends
 
 ```{r}
@@ -81,6 +84,8 @@ q2 = noCancel %>%
 q2 %>% distinct() %>%  pivot_wider(names_from = carrier,values_from = delay)
 ```
 
+# Effect of Different Airports
+
 I next checked to see if the airports made a difference when it came to delays throughout the day, and the results were favorable. It is shown that while all three airports had similar delay times at the beginning of the day, as the day went on they distinctly diverged, with EWR showing the most average delays, LGA coming in second and JFK having the least delays.
 
 ```{r}
@@ -106,6 +111,8 @@ q2 = noCancel %>%
   ) 
 q2 %>% distinct() %>%  pivot_wider(names_from = origin,values_from = delay)
 ```
+
+# Effect of Time of Year
 
 Lastly I plotted to see if there is a correlation between months and delay, and I found that during the holiday months the delay sky rockets, namely in June, July, and December. The fluctuations seem stable in January through April, while August through November are very low in terms of delays. There seems to be a build up to the "crazy" months evident in May and November, likely from early bird vacationers.
 
